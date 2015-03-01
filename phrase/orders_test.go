@@ -83,6 +83,11 @@ func TestOrdersService_Destroy(t *testing.T) {
 	}
 }
 
+func TestOrdersService_Destroy_invalidCode(t *testing.T) {
+	err := client.Orders.Destroy("%")
+	testParseURLError(t, err)
+}
+
 func TestOrdersService_Confirm(t *testing.T) {
 	setup()
 	defer teardown()
@@ -116,6 +121,11 @@ func TestOrdersService_Confirm(t *testing.T) {
 	if !reflect.DeepEqual(order, want) {
 		t.Errorf("Orders.Confirm returned %+v, want %+v", order, want)
 	}
+}
+
+func TestOrdersService_Confirm_invalidCode(t *testing.T) {
+	_, err := client.Orders.Confirm("%")
+	testParseURLError(t, err)
 }
 
 func TestOrdersService_Create(t *testing.T) {

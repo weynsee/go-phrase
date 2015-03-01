@@ -274,3 +274,38 @@ func TestKeysService_Translate_String(t *testing.T) {
 		t.Errorf("Keys.Translate returned %+v, want %+v", translation.String, want)
 	}
 }
+
+func TestKeysService_Upload(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		testFormValues(t, r, map[string]string{
+			"filename":            "de.yml",
+			"locale_code":         "de",
+			"file_content":        "blah",
+			"tags[]":              "tag",
+			"file_format":         "yml",
+			"update_translations": "1",
+			"skip_unverification": "1",
+			"skip_upload_tags":    "1",
+		})
+		fmt.Fprint(w, `{"success":true}`)
+	})
+
+	req := &UploadRequest{
+		Filename:           "de.yml",
+		FileFormat:         "yml",
+		LocaleCode:         "de",
+		FileContent:        "blah",
+		Tags:               []string{"tag"},
+		UpdateTranslations: true,
+		SkipUnverification: true,
+		SkipUploadTags:     true,
+	}
+	err := client.Keys.Upload(req)
+	if err != nil {
+		t.Errorf("Keys.Upload returned error: %v", err)
+	}
+}

@@ -5,10 +5,15 @@ import (
 	"io"
 )
 
+// FileImportsService provides access to the file upload service
+// in the Phrase API.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/file_imports/
 type FileImportsService struct {
 	client *Client
 }
 
+// FileImportRequest represents a file upload request
 type FileImportRequest struct {
 	Locale             string   `url:"file_import[locale_code]"`
 	Filename           string   `url:"file_import[filename],omitempty"`
@@ -20,6 +25,9 @@ type FileImportRequest struct {
 	ConvertEmoji       bool     `url:"file_import[convert_emoji],int,omitempty"`
 }
 
+// Upload a localization file.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/file_imports/
 func (s *FileImportsService) Upload(i *FileImportRequest, reader io.Reader) error {
 	params, err := query.Values(i)
 	if err != nil {

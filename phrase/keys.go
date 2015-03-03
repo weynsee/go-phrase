@@ -16,18 +16,30 @@ type KeysService struct {
 	client *Client
 }
 
-// Key represents a translation key
+// Key represents a translation key.
 type Key struct {
-	ID               int      `json:"id" url:",omitempty"`
-	Name             string   `json:"name" url:"translation_key[name]"`
-	NamePlural       string   `json:"name_plural" url:"translation_key[name_plural],omitempty"`
-	Description      string   `json:"description" url:"translation_key[description]"`
-	Pluralized       bool     `json:"pluralized" url:"translation_key[pluralized],int,omitempty"`
-	DataType         string   `json:"data_type" url:"translation_key[data_type],omitempty"`
-	Tags             []string `json:"tag_list" url:"translation_key[tag_names],comma"`
-	Unformatted      bool     `json:"unformatted" url:"translation_key[unformatted],int,omitempty"`
-	MaxCharacters    int      `json:"max_characters_allowed" url:"translation_key[max_characters_allowed]"`
-	XMLSpacePreserve bool     `json:"xml_space_preserve" url:"translation_key[xml_space_preserve],int,omitempty"`
+	ID int `json:"id" url:",omitempty"`
+
+	// Name of the key. This is the only required field.
+	Name string `json:"name" url:"translation_key[name]"`
+
+	// Plural name of the key, e.g. for use in Gettext format.
+	NamePlural  string `json:"name_plural" url:"translation_key[name_plural],omitempty"`
+	Description string `json:"description" url:"translation_key[description]"`
+	Pluralized  bool   `json:"pluralized" url:"translation_key[pluralized],int,omitempty"`
+
+	// Data type of the key. The values can be string, number, boolean, or array
+	DataType string   `json:"data_type" url:"translation_key[data_type],omitempty"`
+	Tags     []string `json:"tag_list" url:"translation_key[tag_names],comma"`
+
+	// Mark key as unformatted.
+	Unformatted bool `json:"unformatted" url:"translation_key[unformatted],int,omitempty"`
+
+	// Mark xml:space="preserve" as true, i.e. for Android XML format.
+	MaxCharacters int `json:"max_characters_allowed" url:"translation_key[max_characters_allowed]"`
+
+	// Max. number of characters for this key, default is 0 (unlimited).
+	XMLSpacePreserve bool `json:"xml_space_preserve" url:"translation_key[xml_space_preserve],int,omitempty"`
 }
 
 type translateResponse struct {

@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
+// ProjectsService provides access to the projects related functions
+// in the Phrase API.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/projects/
 type ProjectsService struct {
 	client *Client
 }
@@ -14,6 +18,9 @@ type Project struct {
 	Slug string `json:"slug"`
 }
 
+// Get details for the current project.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/projects/
 func (s *ProjectsService) Current() (*Project, error) {
 	req, err := s.client.NewRequest("GET", "projects/current", nil)
 	if err != nil {

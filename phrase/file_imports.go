@@ -13,16 +13,24 @@ type FileImportsService struct {
 	client *Client
 }
 
-// FileImportRequest represents a file upload request
+// FileImportRequest represents a file upload request.
 type FileImportRequest struct {
-	Locale             string   `url:"file_import[locale_code]"`
-	Filename           string   `url:"file_import[filename],omitempty"`
-	Format             string   `url:"file_import[format],omitempty"`
-	Tags               []string `url:"file_import[tag_names],comma,omitempty"`
-	UpdateTranslations bool     `url:"file_import[update_translations],int,omitempty"`
-	SkipUnverification bool     `url:"file_import[skip_unverification],int,omitempty"`
-	SkipUploadTags     bool     `url:"file_import[skip_upload_tags],int,omitempty"`
-	ConvertEmoji       bool     `url:"file_import[convert_emoji],int,omitempty"`
+	Locale   string `url:"file_import[locale_code]"`
+	Filename string `url:"file_import[filename],omitempty"`
+
+	// http://docs.phraseapp.com/guides/formats/
+	Format string   `url:"file_import[format],omitempty"`
+	Tags   []string `url:"file_import[tag_names],comma,omitempty"`
+
+	// Force the update of all translations with the file content.
+	UpdateTranslations bool `url:"file_import[update_translations],int,omitempty"`
+
+	// Do not initiate verification process for existing translations when updating translations.
+	SkipUnverification bool `url:"file_import[skip_unverification],int,omitempty"`
+
+	// Prevent creating an upload tag automatically.
+	SkipUploadTags bool `url:"file_import[skip_upload_tags],int,omitempty"`
+	ConvertEmoji   bool `url:"file_import[convert_emoji],int,omitempty"`
 }
 
 // Upload a localization file.

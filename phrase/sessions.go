@@ -5,6 +5,10 @@ import (
 	"net/url"
 )
 
+// SessionsService provides access to the authentication related functions
+// in the Phrase API.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/
 type SessionsService struct {
 	client *Client
 }
@@ -27,6 +31,9 @@ type checkLoginResponse struct {
 	User     *User `json:"user"`
 }
 
+// Sign in a user identified by email and password.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/#create
 func (s *SessionsService) Create(email, password string) (string, error) {
 	params := url.Values{}
 	params.Set("email", email)
@@ -45,6 +52,9 @@ func (s *SessionsService) Create(email, password string) (string, error) {
 	return sess.Token, err
 }
 
+// Log the current user out.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/#destroy
 func (s *SessionsService) Destroy() error {
 	req, err := s.client.NewRequest("DELETE", "sessions", nil)
 	if err != nil {
@@ -57,6 +67,9 @@ func (s *SessionsService) Destroy() error {
 	return err
 }
 
+// Check the validity of an auth_token and return information of the current user.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/#check_login
 func (s *SessionsService) CheckLogin() (*User, error) {
 	req, err := s.client.NewRequest("GET", "auth/check_login", nil)
 	if err != nil {

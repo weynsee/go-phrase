@@ -10,38 +10,69 @@ import (
 	"time"
 )
 
+// TranslationsService provides access to the translation related functions
+// in the Phrase API.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/
 type TranslationsService struct {
 	client *Client
 }
 
+// Translation represents a translation stored in Phrase.
 type Translation struct {
-	ID                 int      `json:"id" url:"-"`
-	Content            string   `json:"content" url:"content"`
-	PluralSuffix       string   `json:"plural_suffix" url:"plural_suffix"`
-	Placeholders       []string `json:"placeholders" url:"-"`
-	Unverified         bool     `json:"unverified" url:"-"`
-	ExcludedFromExport bool     `json:"excluded_from_export" url:"excluded_from_export,int,omitempty"`
-	Key                Key      `json:"translation_key" url:"-"`
+	ID      int    `json:"id" url:"-"`
+	Content string `json:"content" url:"content"`
+
+	// A plural suffix (only required when the key is pluralized).
+	PluralSuffix string   `json:"plural_suffix" url:"plural_suffix"`
+	Placeholders []string `json:"placeholders" url:"-"`
+	Unverified   bool     `json:"unverified" url:"-"`
+
+	// Whether the translation should be excluded from file downloads.
+	ExcludedFromExport bool `json:"excluded_from_export" url:"excluded_from_export,int,omitempty"`
+	Key                Key  `json:"translation_key" url:"-"`
 }
 
+// DownloadRequest represents the parameters to the download API call.
 type DownloadRequest struct {
-	Locale                   string    `url:"locale"`
-	Format                   string    `url:"format"`
-	UpdatedSince             time.Time `url:"updated_since,omitempty"`
-	Tag                      string    `url:"tag,omitempty"`
-	IncludeEmptyTranslations bool      `url:"include_empty_translations,int,omitempty"`
-	KeepNotranslateTags      bool      `url:"keep_notranslate_tags,int,omitempty"`
-	ConvertEmoji             bool      `url:"convert_emoji,int,omitempty"`
+	// Name of the locale that should be downloaded. This field is mandatory.
+	Locale string `url:"locale"`
+
+	// Name of the format that should be downloaded. This field is mandatory.
+	// http://docs.phraseapp.com/guides/formats/
+	Format string `url:"format"`
+
+	// Date since the last update. Only return translations that were modified after the given date.
+	UpdatedSince time.Time `url:"updated_since,omitempty"`
+	Tag          string    `url:"tag,omitempty"`
+
+	// Include empty translations in the result as well.
+	IncludeEmptyTranslations bool `url:"include_empty_translations,int,omitempty"`
+
+	// Do not remove NOTRANSLATE tags in the downloaded translations.
+	KeepNotranslateTags bool `url:"keep_notranslate_tags,int,omitempty"`
+
+	// Enable Emoji conversion.
+	ConvertEmoji bool `url:"convert_emoji,int,omitempty"`
 }
 
+// RateLimit represents the rate limits returned in the response.
 type RateLimit struct {
-	Limit     int
+	// Number of max requests allowed in the current time period.
+	Limit int
+
+	// Number of remaining requests in the current time period.
 	Remaining int
-	Reset     time.Time
+
+	// Timestamp of end of current time period as UNIX timestamp.
+	Reset time.Time
 }
 
 const timeFormat = "20060102150405"
 
+// List all translations for a locale.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#index
 func (s *TranslationsService) Get(l string, t *time.Time) ([]Translation, error) {
 	params := url.Values{}
 	params.Set("locale_name", l)
@@ -62,6 +93,9 @@ func (s *TranslationsService) Get(l string, t *time.Time) ([]Translation, error)
 	return translations, err
 }
 
+// List all translations for all locale.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#index
 func (s *TranslationsService) ListAll() (map[string][]Translation, error) {
 	req, err := s.client.NewRequest("GET", "translations", nil)
 	if err != nil {
@@ -77,6 +111,9 @@ func (s *TranslationsService) ListAll() (map[string][]Translation, error) {
 	return translations, err
 }
 
+// Fetch translations for a locale and a list of keys.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#fetch_list
 func (s *TranslationsService) GetByKeys(l string, keys []string) ([]Translation, error) {
 	params := url.Values{}
 	params.Set("locale", l)
@@ -97,6 +134,9 @@ func (s *TranslationsService) GetByKeys(l string, keys []string) ([]Translation,
 	return translations, err
 }
 
+// Download translations as localization file. This call is rate limited.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#download
 func (s *TranslationsService) Download(d *DownloadRequest, w io.Writer) (*RateLimit, error) {
 	params, err := query.Values(d)
 	if err != nil {
@@ -117,6 +157,9 @@ func (s *TranslationsService) Download(d *DownloadRequest, w io.Writer) (*RateLi
 	return rate, nil
 }
 
+// Save a translation for a given locale.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#store
 func (s *TranslationsService) Update(locale, key string, t *Translation, skipVerification, disallowUpdate bool) (*Translation, error) {
 	params, err := query.Values(t)
 	params.Set("locale", locale)

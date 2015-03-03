@@ -30,7 +30,9 @@ type FileImportRequest struct {
 
 	// Prevent creating an upload tag automatically.
 	SkipUploadTags bool `url:"file_import[skip_upload_tags],int,omitempty"`
-	ConvertEmoji   bool `url:"file_import[convert_emoji],int,omitempty"`
+
+	// Enable Emoji conversion.
+	ConvertEmoji bool `url:"file_import[convert_emoji],int,omitempty"`
 }
 
 // Upload a localization file.

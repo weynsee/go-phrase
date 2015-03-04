@@ -7,10 +7,15 @@ import (
 	"net/url"
 )
 
+// LocalesService provides access to the locales related functions
+// in the Phrase API.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/
 type LocalesService struct {
 	client *Client
 }
 
+// Locale represents a locale.
 type Locale struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -20,6 +25,9 @@ type Locale struct {
 	Default     bool   `json:"is_default"`
 }
 
+// Returns list of existing locales in current project.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#index
 func (s *LocalesService) ListAll() ([]Locale, error) {
 	req, err := s.client.NewRequest("GET", "locales", nil)
 	if err != nil {
@@ -40,8 +48,12 @@ func (l Locale) String() string {
 		l.ID, l.Name)
 }
 
-func (s *LocalesService) Download(locale, f string, w io.Writer) error {
-	path := fmt.Sprintf("locales/%s.%s", locale, f)
+// Download translations for locale in a specific format.
+// See http://docs.phraseapp.com/guides/formats/ for the list of all supported formats.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#show
+func (s *LocalesService) Download(locale, format string, w io.Writer) error {
+	path := fmt.Sprintf("locales/%s.%s", locale, format)
 	req, err := s.client.NewRequest("GET", path, nil)
 	if err != nil {
 		return err
@@ -53,6 +65,9 @@ func (s *LocalesService) Download(locale, f string, w io.Writer) error {
 	return nil
 }
 
+// Create a new locale in the current project.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#create
 func (s *LocalesService) Create(name string) (*Locale, error) {
 	params := url.Values{}
 	params.Set("locale[name]", name)
@@ -64,6 +79,9 @@ func (s *LocalesService) Create(name string) (*Locale, error) {
 	return s.requestLocale(req)
 }
 
+// Promotes locale to be the default locale for the current project.
+//
+// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#make_default
 func (s *LocalesService) MakeDefault(name string) (*Locale, error) {
 	req, err := s.client.NewRequest("PUT", fmt.Sprintf("locales/%s/make_default", name), nil)
 	if err != nil {

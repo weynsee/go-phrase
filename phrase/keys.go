@@ -11,7 +11,7 @@ import (
 // KeysService provides access to the translation key related functions
 // in the Phrase API.
 //
-// http://docs.phraseapp.com/api/v1/translation_keys/
+// Phrase API docs: http://docs.phraseapp.com/api/v1/translation_keys/
 type KeysService struct {
 	client *Client
 }

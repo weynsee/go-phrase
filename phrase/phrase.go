@@ -16,14 +16,25 @@ const (
 	userAgent      = "go-phrase/" + libraryVersion
 )
 
+// A Client manages communication with the Phrase API.
 type Client struct {
+	// HTTP client used to communicate with the API.
 	client    *http.Client
 	baseURL   *url.URL
 	UserAgent string
 
-	AuthToken        string
+	// Authentication token that is required for all API requests.
+	// It can either be the the project authentication token, or
+	// in the case of signed requests, the user authentication token,
+	// in which case the ProjectAuthToken should contain the project
+	// authentication token.
+	AuthToken string
+
+	// Project authentication token which is only required when AuthToken
+	// contains the user auth token which is required in signed requests.
 	ProjectAuthToken string
 
+	// Services used for talking to different parts of the Phrase API.
 	Sessions     *SessionsService
 	Projects     *ProjectsService
 	Locales      *LocalesService
@@ -35,10 +46,16 @@ type Client struct {
 	Orders       *OrdersService
 }
 
+// New creates a Phrase API client.
+// To use API methods that require user credentials (i.e. signed requests),
+// use NewClient.
 func New(authtoken string) *Client {
 	return NewClient(authtoken, "", nil)
 }
 
+// NewClient returns a Phrase API client. If a nil httpClient is
+// provided, http.DefaultClient will be used. NewClient allows the setting
+// of AuthToken and ProjectAuthToken, unlike New.
 func NewClient(authToken, projectToken string, httpClient *http.Client) *Client {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -59,6 +76,10 @@ func NewClient(authToken, projectToken string, httpClient *http.Client) *Client 
 	return c
 }
 
+// NewRequest creates an API request. A relative URL can be provided in urlStr,
+// in which case it is resolved relative to the baseURL of the Client.
+// Relative URLs should always be specified without a preceding slash.
+// Params are added as query strings for GET requests, and url encoded for others.
 func (c *Client) NewRequest(method, urlStr string, params url.Values) (*http.Request, error) {
 	if params == nil {
 		params = url.Values{}
@@ -108,6 +129,7 @@ func (c *Client) resolveURL(urlStr string) (*url.URL, error) {
 	return c.baseURL.ResolveReference(rel), nil
 }
 
+// NewUploadRequest creates an upload request.
 func (c *Client) NewUploadRequest(urlStr string, params url.Values, paramName, filename string, reader io.Reader) (*http.Request, error) {
 	if params == nil {
 		params = url.Values{}

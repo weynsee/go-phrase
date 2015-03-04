@@ -18,6 +18,7 @@ type session struct {
 	Token   string `json:"auth_token"`
 }
 
+// User represents a user account in Phrase.
 type User struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`

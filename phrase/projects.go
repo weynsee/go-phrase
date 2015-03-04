@@ -12,6 +12,7 @@ type ProjectsService struct {
 	client *Client
 }
 
+// Project represents the project associated with the current auth token.
 type Project struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`

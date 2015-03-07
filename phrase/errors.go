@@ -9,7 +9,9 @@ import (
 	"strings"
 )
 
-// ErrorResponse represents the response when the Phrase API returns an error
+// ErrorResponse represents the response when the Phrase API returns an error.
+// Error responses are expected to have either a text message (stored in
+// the Message field), or a map of string arrays (stored in ValidationError).
 type ErrorResponse struct {
 	*http.Response
 
@@ -19,11 +21,11 @@ type ErrorResponse struct {
 	// Message represents the error message.
 	Message string `json:"-"`
 
-	// ValidationError represents validation errors pertaining to the request, containing a map of field to error message
+	// ValidationError represents validation errors pertaining to the request, containing a map of field to error message.
 	ValidationError errorMap `json:"-"`
 }
 
-// ResponseError returns a populated ErrorResponse from an *http.Response
+// ResponseError returns a populated ErrorResponse from an *http.Response.
 func ResponseError(resp *http.Response) *ErrorResponse {
 	e := &ErrorResponse{Response: resp}
 	e.populate()
@@ -32,7 +34,7 @@ func ResponseError(resp *http.Response) *ErrorResponse {
 
 type errorMap map[string][]string
 
-// populate reads in the response to populate the fields in ErrorResponse
+// populate reads in the response to populate the fields in ErrorResponse.
 func (r *ErrorResponse) populate() {
 	data, err := ioutil.ReadAll(r.Response.Body)
 	if err == nil && data != nil {

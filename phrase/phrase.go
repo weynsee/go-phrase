@@ -167,6 +167,11 @@ func (c *Client) NewUploadRequest(urlStr string, params url.Values, paramName, f
 	return req, err
 }
 
+// Do sends an API request and returns the API response.  The API response is
+// JSON decoded and stored in the value pointed to by v, or returned as an
+// error if an API error has occurred.  If v implements the io.Writer
+// interface, the raw response body will be written to v, without attempting to
+// first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -192,6 +197,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	return resp, err
 }
 
+// CheckResponse checks the API response for errors, and returns them if
+// present.  A response is considered an error if it has a status code outside
+// the 200 range.
 func CheckResponse(r *http.Response) error {
 	if c := r.StatusCode; 200 <= c && c <= 299 {
 		return nil

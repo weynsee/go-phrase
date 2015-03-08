@@ -1,8 +1,10 @@
 package phrase
 
 import (
+	"fmt"
 	"github.com/google/go-querystring/query"
 	"io"
+	"net/url"
 )
 
 // FileImportsService provides access to the file upload service
@@ -33,7 +35,12 @@ type FileImportRequest struct {
 
 	// Enable Emoji conversion.
 	ConvertEmoji bool `url:"file_import[convert_emoji],int,omitempty"`
+
+	// Some formats can have additional options. Please check the format guide for more information about available options.
+	FormatOptions formatOptions `url:"file_import[format_options],omitempty"`
 }
+
+type formatOptions map[string]interface{}
 
 // Upload a localization file.
 //
@@ -53,4 +60,11 @@ func (s *FileImportsService) Upload(i *FileImportRequest, reader io.Reader) erro
 	resp := new(successResponse)
 	_, err = s.client.Do(req, resp)
 	return err
+}
+
+func (o formatOptions) EncodeValues(key string, v *url.Values) error {
+	for k, val := range o {
+		(*v)[key+fmt.Sprintf("[%s]", k)] = []string{fmt.Sprintf("%v", val)}
+	}
+	return nil
 }

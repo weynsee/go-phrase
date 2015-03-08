@@ -12,7 +12,7 @@ import (
 func TestFileImportsService_Upload(t *testing.T) {
 	setup()
 	defer teardown()
-	filename := "en.yml"
+	filename := "en.csv"
 
 	mux.HandleFunc("/file_imports", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseMultipartForm(100000)
@@ -21,14 +21,20 @@ func TestFileImportsService_Upload(t *testing.T) {
 		}
 		testMethod(t, r, "POST")
 		testParams(t, r.MultipartForm.Value, map[string]string{
-			"file_import[skip_upload_tags]":    "1",
-			"file_import[skip_unverification]": "1",
-			"file_import[convert_emoji]":       "1",
-			"file_import[locale_code]":         "en",
-			"file_import[filename]":            filename,
-			"file_import[format]":              "yml",
-			"file_import[tag_names]":           "new,upload",
-			"file_import[update_translations]": "1",
+			"file_import[skip_upload_tags]":                   "1",
+			"file_import[skip_unverification]":                "1",
+			"file_import[convert_emoji]":                      "1",
+			"file_import[locale_code]":                        "en",
+			"file_import[filename]":                           filename,
+			"file_import[format]":                             "csv",
+			"file_import[tag_names]":                          "new,upload",
+			"file_import[update_translations]":                "1",
+			"file_import[format_options][key_index]":          "1",
+			"file_import[format_options][translation_index]":  "2",
+			"file_import[format_options][comment_index]":      "3",
+			"file_import[format_options][column_separator]":   ",",
+			"file_import[format_options][quote_char]":         "\"",
+			"file_import[format_options][header_content_row]": "false",
 		})
 		file := r.MultipartForm.File["file_import[file]"][0]
 		if file.Filename != filename {
@@ -50,12 +56,20 @@ func TestFileImportsService_Upload(t *testing.T) {
 	upload := &FileImportRequest{
 		Locale:             "en",
 		Filename:           filename,
-		Format:             "yml",
+		Format:             "csv",
 		Tags:               []string{"new", "upload"},
 		UpdateTranslations: true,
 		SkipUnverification: true,
 		SkipUploadTags:     true,
 		ConvertEmoji:       true,
+		FormatOptions: map[string]interface{}{
+			"key_index":          1,
+			"translation_index":  2,
+			"comment_index":      3,
+			"column_separator":   ",",
+			"quote_char":         "\"",
+			"header_content_row": false,
+		},
 	}
 	err := client.FileImports.Upload(upload, strings.NewReader("this is a test"))
 	if err != nil {

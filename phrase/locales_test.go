@@ -14,7 +14,7 @@ func TestLocalesService_ListAll(t *testing.T) {
 
 	mux.HandleFunc("/locales", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		fmt.Fprint(w, `[{"id":122,"name":"german","code":"de-DE","country_code":"de","writing_direction":"ltr"},{"id":123,"name":"arabic","code":"ar","country_code":"sa","writing_direction":"rtl"}]`)
+		fmt.Fprint(w, `[{"id":122,"name":"german","code":"de-DE","country_code":"de","writing_direction":"ltr"},{"id":123,"name":"arabic","code":"ar","country_code":"sa","writing_direction":"rtl","pluralizations":{"zero":{"example":"0"},"other":{"gettext_mapping":"0","example":"5"}}}]`)
 	})
 
 	locales, err := client.Locales.ListAll()
@@ -22,7 +22,29 @@ func TestLocalesService_ListAll(t *testing.T) {
 		t.Errorf("Locales.ListAll returned error: %v", err)
 	}
 
-	want := []Locale{{ID: 122, Name: "german", Code: "de-DE", CountryCode: "de", Direction: "ltr"}, {ID: 123, Name: "arabic", Code: "ar", CountryCode: "sa", Direction: "rtl"}}
+	want := []Locale{
+		{
+			ID:          122,
+			Name:        "german",
+			Code:        "de-DE",
+			CountryCode: "de",
+			Direction:   "ltr",
+		},
+		{
+			ID:          123,
+			Name:        "arabic",
+			Code:        "ar",
+			CountryCode: "sa",
+			Direction:   "rtl",
+			Pluralizations: map[string]map[string]string{
+				"zero": map[string]string{"example": "0"},
+				"other": map[string]string{
+					"gettext_mapping": "0",
+					"example":         "5",
+				},
+			},
+		},
+	}
 	if !reflect.DeepEqual(locales, want) {
 		t.Errorf("Locales.ListAll returned %+v, want %+v", locales, want)
 	}

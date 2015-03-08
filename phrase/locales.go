@@ -17,12 +17,13 @@ type LocalesService struct {
 
 // Locale represents a locale.
 type Locale struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Code        string `json:"code"`
-	CountryCode string `json:"country_code"`
-	Direction   string `json:"writing_direction"`
-	Default     bool   `json:"is_default"`
+	ID             int                          `json:"id"`
+	Name           string                       `json:"name"`
+	Code           string                       `json:"code"`
+	CountryCode    string                       `json:"country_code"`
+	Direction      string                       `json:"writing_direction"`
+	Default        bool                         `json:"is_default"`
+	Pluralizations map[string]map[string]string `json:"pluralizations"`
 }
 
 // Returns list of existing locales in current project.

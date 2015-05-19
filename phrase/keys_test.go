@@ -35,6 +35,13 @@ func TestKeysService_ListAll(t *testing.T) {
 	}
 }
 
+func TestKeysService_ListAll_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Keys.ListAll()
+		return err
+	})
+}
+
 func TestKeysService_Get(t *testing.T) {
 	setup()
 	defer teardown()
@@ -64,6 +71,13 @@ func TestKeysService_Get(t *testing.T) {
 	if !reflect.DeepEqual(keys, want) {
 		t.Errorf("Keys.Get returned %+v, want %+v", keys, want)
 	}
+}
+
+func TestKeysService_Get_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Keys.Get([]string{"my.key"})
+		return err
+	})
 }
 
 func TestKeysService_Create(t *testing.T) {
@@ -108,6 +122,20 @@ func TestKeysService_Create(t *testing.T) {
 	}
 }
 
+func TestKeysService_Create_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Keys.Create(&Key{})
+		return err
+	})
+}
+
+func TestKeysService_Create_invalidParam(t *testing.T) {
+	_, err := client.Keys.Create(nil)
+	if err == nil {
+		t.Fatal("Cannot do create key with a nil request")
+	}
+}
+
 func TestKeysService_Destroy(t *testing.T) {
 	setup()
 	defer teardown()
@@ -121,6 +149,13 @@ func TestKeysService_Destroy(t *testing.T) {
 	if err != nil {
 		t.Errorf("Keys.Destroy returned error: %v", err)
 	}
+}
+
+func TestKeysService_Destroy_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		err := client.Keys.Destroy(0)
+		return err
+	})
 }
 
 func TestKeysService_DestroyMultiple(t *testing.T) {
@@ -139,6 +174,13 @@ func TestKeysService_DestroyMultiple(t *testing.T) {
 	if err != nil {
 		t.Errorf("Keys.DestroyMultiple returned error: %v", err)
 	}
+}
+
+func TestKeysService_DestroyMultiple_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		err := client.Keys.DestroyMultiple([]int{1})
+		return err
+	})
 }
 
 func TestKeysService_Update(t *testing.T) {
@@ -183,6 +225,20 @@ func TestKeysService_Update(t *testing.T) {
 	}
 }
 
+func TestKeysService_Update_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Keys.Update(&Key{})
+		return err
+	})
+}
+
+func TestKeysService_Update_invalidParam(t *testing.T) {
+	_, err := client.Keys.Update(nil)
+	if err == nil {
+		t.Fatal("Cannot do key update with a nil request")
+	}
+}
+
 func TestKeysService_ListUntranslated(t *testing.T) {
 	setup()
 	defer teardown()
@@ -211,6 +267,13 @@ func TestKeysService_ListUntranslated(t *testing.T) {
 	}
 }
 
+func TestKeysService_ListUntranslated_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Keys.ListUntranslated("fr")
+		return err
+	})
+}
+
 func TestKeysService_Tag(t *testing.T) {
 	setup()
 	defer teardown()
@@ -228,6 +291,12 @@ func TestKeysService_Tag(t *testing.T) {
 	if err != nil {
 		t.Errorf("Keys.Tag returned error: %v", err)
 	}
+}
+
+func TestKeysService_Tag_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		return client.Keys.Tag([]int{123}, []string{"mobile"})
+	})
 }
 
 func TestKeysService_Translate_Map(t *testing.T) {
@@ -254,6 +323,13 @@ func TestKeysService_Translate_Map(t *testing.T) {
 	}
 }
 
+func TestKeysService_Translate_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Keys.Translate("mykey")
+		return err
+	})
+}
+
 func TestKeysService_Translate_String(t *testing.T) {
 	setup()
 	defer teardown()
@@ -275,6 +351,48 @@ func TestKeysService_Translate_String(t *testing.T) {
 	}
 }
 
+func TestKeysService_Translate_jsonError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/translation_keys/translate", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `1`)
+	})
+
+	_, err := client.Keys.Translate("mykey")
+	if err == nil {
+		t.Error("Keys.Translate will return marshal error if response cannot be parsed as JSON")
+	}
+}
+
+func TestKeysService_Translate_failed(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/translation_keys/translate", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"success":false,"translate":false}`)
+	})
+
+	key, _ := client.Keys.Translate("mykey")
+	if key != nil {
+		t.Error("Keys.Translate will return nil if translate failed")
+	}
+}
+
+func TestKeysService_Translate_parseError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/translation_keys/translate", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"success":true,"translate":false}`)
+	})
+
+	_, err := client.Keys.Translate("mykey")
+	if err == nil {
+		t.Error("Keys.Translate will return error if translate field cannot be parsed")
+	}
+}
+
 func TestKeysService_Upload(t *testing.T) {
 	setup()
 	defer teardown()
@@ -283,7 +401,7 @@ func TestKeysService_Upload(t *testing.T) {
 		testMethod(t, r, "POST")
 		testFormValues(t, r, map[string]string{
 			"filename":            "de.yml",
-			"locale_code":         "de",
+			"locale_name":         "de",
 			"file_content":        "blah",
 			"tags[]":              "tag",
 			"file_format":         "yml",
@@ -296,8 +414,8 @@ func TestKeysService_Upload(t *testing.T) {
 
 	req := &UploadRequest{
 		Filename:           "de.yml",
-		FileFormat:         "yml",
-		LocaleCode:         "de",
+		Format:             "yml",
+		Locale:             "de",
 		FileContent:        "blah",
 		Tags:               []string{"tag"},
 		UpdateTranslations: true,
@@ -307,5 +425,18 @@ func TestKeysService_Upload(t *testing.T) {
 	err := client.Keys.Upload(req)
 	if err != nil {
 		t.Errorf("Keys.Upload returned error: %v", err)
+	}
+}
+
+func TestKeysService_Upload_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		return client.Keys.Upload(&UploadRequest{})
+	})
+}
+
+func TestKeysService_Upload_invalidParam(t *testing.T) {
+	err := client.Keys.Upload(nil)
+	if err == nil {
+		t.Fatal("Cannot do key upload with a nil request")
 	}
 }

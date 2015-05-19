@@ -3,9 +3,9 @@ package phrase
 import "fmt"
 
 // TagsService provides access to the tags related functions
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/tags/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/tags/
 type TagsService struct {
 	client *Client
 }
@@ -38,7 +38,7 @@ type TagProgress struct {
 
 // Get a list of all tags in the current project.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/tags/#index
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/tags/#index
 func (s *TagsService) ListAll() ([]Tag, error) {
 	req, err := s.client.NewRequest("GET", "tags", nil)
 	if err != nil {
@@ -56,7 +56,7 @@ func (s *TagsService) ListAll() ([]Tag, error) {
 
 // Get detailed information and progress for a tag.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/tags/#show
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/tags/#show
 func (s *TagsService) GetProgress(id int) (*TagProgress, error) {
 	url := fmt.Sprintf("tags/%d", id)
 	req, err := s.client.NewRequest("GET", url, nil)
@@ -71,14 +71,4 @@ func (s *TagsService) GetProgress(id int) (*TagProgress, error) {
 	}
 
 	return progress, err
-}
-
-func (t Tag) String() string {
-	return fmt.Sprintf("Tag ID: %d Name: %s",
-		t.ID, t.Name)
-}
-
-func (t TagProgress) String() string {
-	return fmt.Sprintf("TagProgress Tag: %s Progress: %v",
-		t.Tag, t.Progress)
 }

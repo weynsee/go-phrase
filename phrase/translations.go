@@ -1,7 +1,6 @@
 package phrase
 
 import (
-	"fmt"
 	"github.com/google/go-querystring/query"
 	"io"
 	"net/http"
@@ -11,14 +10,14 @@ import (
 )
 
 // TranslationsService provides access to the translation related functions
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/
 type TranslationsService struct {
 	client *Client
 }
 
-// Translation represents a translation stored in Phrase.
+// Translation represents a translation stored in PhraseApp.
 type Translation struct {
 	ID      int    `json:"id" url:"-"`
 	Content string `json:"content" url:"content"`
@@ -42,6 +41,9 @@ type DownloadRequest struct {
 	// http://docs.phraseapp.com/guides/formats/
 	Format string `url:"format"`
 
+	// Encoding of the downloaded file
+	Encoding string `url:"encoding,omitempty"`
+
 	// Date since the last update. Only return translations that were modified after the given date.
 	UpdatedSince time.Time `url:"updated_since,omitempty"`
 	Tag          string    `url:"tag,omitempty"`
@@ -54,6 +56,9 @@ type DownloadRequest struct {
 
 	// Enable Emoji conversion.
 	ConvertEmoji bool `url:"convert_emoji,int,omitempty"`
+
+	// Skip unverified translations from appearing in the downloaded file.
+	SkipUnverifiedTranslations bool `url:"skip_unverified_translations,int,omitempty"`
 }
 
 // RateLimit represents the rate limits returned in the response.
@@ -72,7 +77,7 @@ const timeFormat = "20060102150405"
 
 // List all translations for a locale.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#index
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#index
 func (s *TranslationsService) Get(l string, t *time.Time) ([]Translation, error) {
 	params := url.Values{}
 	params.Set("locale_name", l)
@@ -95,7 +100,7 @@ func (s *TranslationsService) Get(l string, t *time.Time) ([]Translation, error)
 
 // List all translations for all locale.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#index
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#index
 func (s *TranslationsService) ListAll() (map[string][]Translation, error) {
 	req, err := s.client.NewRequest("GET", "translations", nil)
 	if err != nil {
@@ -113,7 +118,7 @@ func (s *TranslationsService) ListAll() (map[string][]Translation, error) {
 
 // Fetch translations for a locale and a list of keys.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#fetch_list
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#fetch_list
 func (s *TranslationsService) GetByKeys(l string, keys []string) ([]Translation, error) {
 	params := url.Values{}
 	params.Set("locale", l)
@@ -136,7 +141,7 @@ func (s *TranslationsService) GetByKeys(l string, keys []string) ([]Translation,
 
 // Download translations as localization file. This call is rate limited.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#download
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#download
 func (s *TranslationsService) Download(d *DownloadRequest, w io.Writer) (*RateLimit, error) {
 	params, err := query.Values(d)
 	if err != nil {
@@ -159,7 +164,7 @@ func (s *TranslationsService) Download(d *DownloadRequest, w io.Writer) (*RateLi
 
 // Save a translation for a given locale.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translations/#store
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#store
 func (s *TranslationsService) Update(locale, key string, t *Translation, skipVerification, disallowUpdate bool) (*Translation, error) {
 	params, err := query.Values(t)
 	params.Set("locale", locale)
@@ -182,16 +187,6 @@ func (s *TranslationsService) Update(locale, key string, t *Translation, skipVer
 	}
 
 	return translation, err
-}
-
-func (r RateLimit) String() string {
-	return fmt.Sprintf("RateLimit Limit: %d Remaining: %d Reset: %v",
-		r.Limit, r.Remaining, r.Reset)
-}
-
-func (t Translation) String() string {
-	return fmt.Sprintf("Translation ID: %d Content: %s Key: %v",
-		t.ID, t.Content, t.Key)
 }
 
 func getRateLimit(h *http.Header) *RateLimit {

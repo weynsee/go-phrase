@@ -1,2 +1,4 @@
 /examples/*.yml
-
+.phrase
+.ruby-version
+/cli/test/*.yml

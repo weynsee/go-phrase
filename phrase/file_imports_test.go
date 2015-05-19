@@ -76,3 +76,14 @@ func TestFileImportsService_Upload(t *testing.T) {
 		t.Errorf("FileImports.Upload returned error: %v", err)
 	}
 }
+
+func TestFileImportsService_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		upload := &FileImportRequest{
+			Locale:   "en",
+			Filename: "test.json",
+			Format:   "json",
+		}
+		return client.FileImports.Upload(upload, strings.NewReader("this is a test"))
+	})
+}

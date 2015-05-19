@@ -1,6 +1,6 @@
 # go-phrase #
 
-go-phrase is a Go client library for accessing the [Phrase API](http://docs.phraseapp.com/api/v1/).
+go-phrase is a Go client library for accessing the [PhraseApp API](http://docs.phraseapp.com/api/v1/).
 
 **Documentation:** [![GoDoc](https://godoc.org/github.com/weynsee/go-phrase?status.svg)](https://godoc.org/github.com/weynsee/go-phrase)  
 **Build Status:** [![Build Status](https://travis-ci.org/weynsee/go-phrase.svg?branch=master)](https://travis-ci.org/weynsee/go-phrase)  
@@ -14,8 +14,8 @@ go-phrase requires Go version 1.1 or greater.
 import "github.com/weynsee/go-phrase/phrase"
 ```
 
-Construct a new Phrase client, then use the various services on the client to
-access different parts of the Phrase API.  For example, to list all
+Construct a new API client, then use the various services on the client to
+access different parts of the PhraseApp API.  For example, to list all
 the locales for your project token:
 
 ```go

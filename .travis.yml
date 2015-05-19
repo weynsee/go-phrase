@@ -4,7 +4,11 @@ go:
   - tip
 before_install:
   - go get github.com/axw/gocov/gocov
+  - go get github.com/modocache/gover
   - go get github.com/mattn/goveralls
   - if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 script:
-  - $HOME/gopath/bin/goveralls -service=travis-ci ./phrase
+  - go test -coverprofile=phrase.coverprofile ./phrase
+  - go test -coverprofile=cli.coverprofile ./cli
+  - $HOME/gopath/bin/gover
+  - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service travis-ci

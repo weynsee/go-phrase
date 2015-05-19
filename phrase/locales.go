@@ -8,9 +8,9 @@ import (
 )
 
 // LocalesService provides access to the locales related functions
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/locales/
 type LocalesService struct {
 	client *Client
 }
@@ -28,7 +28,7 @@ type Locale struct {
 
 // Returns list of existing locales in current project.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#index
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/locales/#index
 func (s *LocalesService) ListAll() ([]Locale, error) {
 	req, err := s.client.NewRequest("GET", "locales", nil)
 	if err != nil {
@@ -44,15 +44,10 @@ func (s *LocalesService) ListAll() ([]Locale, error) {
 	return *locales, err
 }
 
-func (l Locale) String() string {
-	return fmt.Sprintf("Locale ID: %d Name: %s",
-		l.ID, l.Name)
-}
-
 // Download translations for locale in a specific format.
 // See http://docs.phraseapp.com/guides/formats/ for the list of all supported formats.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#show
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/locales/#show
 func (s *LocalesService) Download(locale, format string, w io.Writer) error {
 	path := fmt.Sprintf("locales/%s.%s", locale, format)
 	req, err := s.client.NewRequest("GET", path, nil)
@@ -68,7 +63,7 @@ func (s *LocalesService) Download(locale, format string, w io.Writer) error {
 
 // Create a new locale in the current project.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#create
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/locales/#create
 func (s *LocalesService) Create(name string) (*Locale, error) {
 	params := url.Values{}
 	params.Set("locale[name]", name)
@@ -82,7 +77,7 @@ func (s *LocalesService) Create(name string) (*Locale, error) {
 
 // Promotes locale to be the default locale for the current project.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/locales/#make_default
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/locales/#make_default
 func (s *LocalesService) MakeDefault(name string) (*Locale, error) {
 	req, err := s.client.NewRequest("PUT", fmt.Sprintf("locales/%s/make_default", name), nil)
 	if err != nil {

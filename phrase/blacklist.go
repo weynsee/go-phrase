@@ -1,9 +1,9 @@
 package phrase
 
 // BlacklistService provides access to the blacklist related functions
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/blacklisted_keys/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/blacklisted_keys/
 type BlacklistService struct {
 	client *Client
 }
@@ -14,7 +14,7 @@ type blacklistKey struct {
 
 // List all blacklisted keys.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/blacklisted_keys/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/blacklisted_keys/
 func (s *BlacklistService) Keys() ([]string, error) {
 	req, err := s.client.NewRequest("GET", "blacklisted_keys", nil)
 	if err != nil {

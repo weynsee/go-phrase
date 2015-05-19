@@ -27,6 +27,13 @@ func TestTagsService_ListAll(t *testing.T) {
 	}
 }
 
+func TestTagsService_ListAll_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Tags.ListAll()
+		return err
+	})
+}
+
 func TestTagsService_GetProgress(t *testing.T) {
 	setup()
 	defer teardown()
@@ -57,4 +64,11 @@ func TestTagsService_GetProgress(t *testing.T) {
 	if !reflect.DeepEqual(progress.Tag, want.Tag) {
 		t.Errorf("Tags.GetProgress.Tag returned %+v, want %+v", progress.Tag, want.Tag)
 	}
+}
+
+func TestTagsService_GetProgress_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Tags.GetProgress(1)
+		return err
+	})
 }

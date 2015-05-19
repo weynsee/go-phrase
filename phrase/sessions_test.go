@@ -32,6 +32,13 @@ func TestSessionsService_Create(t *testing.T) {
 	}
 }
 
+func TestSessionsService_Create_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Sessions.Create("a@a.com", "password")
+		return err
+	})
+}
+
 func TestSessionsService_Destroy(t *testing.T) {
 	setup()
 	defer teardown()
@@ -45,6 +52,12 @@ func TestSessionsService_Destroy(t *testing.T) {
 	if err != nil {
 		t.Errorf("Sessions.Destroy returned error: %v", err)
 	}
+}
+
+func TestSessionsService_Destroy_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		return client.Sessions.Destroy()
+	})
 }
 
 func TestSessionsService_CheckLogin(t *testing.T) {
@@ -65,4 +78,11 @@ func TestSessionsService_CheckLogin(t *testing.T) {
 	if !reflect.DeepEqual(user, want) {
 		t.Errorf("Sessions.CheckLogin returned %+v, want %+v", user, want)
 	}
+}
+
+func TestSessionsService_CheckLogin_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Sessions.CheckLogin()
+		return err
+	})
 }

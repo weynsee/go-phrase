@@ -26,3 +26,10 @@ func TestProjectsService_Current(t *testing.T) {
 		t.Errorf("Projects.Current returned %+v, want %+v", project, want)
 	}
 }
+
+func TestProjectsService_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Projects.Current()
+		return err
+	})
+}

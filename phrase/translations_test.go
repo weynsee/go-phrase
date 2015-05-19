@@ -29,6 +29,13 @@ func TestTranslationsService_ListAll(t *testing.T) {
 	}
 }
 
+func TestTranslationsService_ListAll_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Translations.ListAll()
+		return err
+	})
+}
+
 func TestTranslationsService_Get(t *testing.T) {
 	setup()
 	defer teardown()
@@ -56,6 +63,13 @@ func TestTranslationsService_Get(t *testing.T) {
 	}
 }
 
+func TestTranslationsService_Get_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Translations.Get("fr", nil)
+		return err
+	})
+}
+
 func TestTranslationsService_GetByKeys(t *testing.T) {
 	setup()
 	defer teardown()
@@ -78,6 +92,13 @@ func TestTranslationsService_GetByKeys(t *testing.T) {
 	if !reflect.DeepEqual(translations, want) {
 		t.Errorf("Translations.GetByKeys returned %+v, want %+v", translations, want)
 	}
+}
+
+func TestTranslationsService_GetByKeys_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Translations.GetByKeys("fr", []string{"blah"})
+		return err
+	})
 }
 
 func TestTranslationsService_Update(t *testing.T) {
@@ -108,6 +129,14 @@ func TestTranslationsService_Update(t *testing.T) {
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Translations.Update returned %+v, want %+v", got, want)
 	}
+}
+
+func TestTranslationsService_Update_serverError(t *testing.T) {
+	translation := &Translation{PluralSuffix: "suffix", ExcludedFromExport: true, Content: "dummy content"}
+	testErrorHandling(t, func() error {
+		_, err := client.Translations.Update("de", "this.label", translation, true, true)
+		return err
+	})
 }
 
 func TestTranslationsService_Download(t *testing.T) {
@@ -156,6 +185,17 @@ func TestTranslationsService_Download(t *testing.T) {
 	if limit.Reset.UTC() != reset {
 		t.Errorf("Rate reset = %v, want %v", limit.Reset, reset)
 	}
+}
+
+func TestTranslationsService_Download_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		req := &DownloadRequest{
+			Locale: "ru",
+			Format: "yml",
+		}
+		_, err := client.Translations.Download(req, new(bytes.Buffer))
+		return err
+	})
 }
 
 func testTranslationJSON() string {

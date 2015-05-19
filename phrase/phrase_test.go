@@ -21,7 +21,7 @@ func setup() {
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
 	client = New("faketoken")
-	client.baseURL, _ = url.Parse(server.URL)
+	client.BaseURL, _ = url.Parse(server.URL)
 }
 
 func teardown() {
@@ -44,8 +44,8 @@ func TestNew(t *testing.T) {
 func TestNewClient(t *testing.T) {
 	c := NewClient("token1", "token2", nil)
 
-	if got, want := c.baseURL.String(), defaultBaseURL; got != want {
-		t.Errorf("NewClient baseURL is %v, want %v", got, want)
+	if got, want := c.BaseURL.String(), defaultBaseURL; got != want {
+		t.Errorf("NewClient BaseURL is %v, want %v", got, want)
 	}
 	if got, want := c.UserAgent, userAgent; got != want {
 		t.Errorf("NewClient UserAgent is %v, want %v", got, want)
@@ -218,5 +218,27 @@ func testParams(t *testing.T, values url.Values, want map[string]string) {
 		if values.Get(k) != v {
 			t.Errorf("Request body parameter %s should have value %s", k, v)
 		}
+	}
+}
+
+func testErrorHandling(t *testing.T, f func() error) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		fmt.Fprint(w, `Service Unavailable`)
+	})
+
+	err := f()
+
+	if err == nil {
+		t.Errorf("testErrorHandling returned error: %v", err)
+	}
+
+	if e, ok := err.(*ErrorResponse); !ok {
+		t.Error("Error returned should be an ErrorResponse")
+	} else if e.Message != "Service Unavailable" {
+		t.Error("Error message should be an Service Unavailable")
 	}
 }

@@ -8,9 +8,9 @@ import (
 )
 
 // FileImportsService provides access to the file upload service
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/file_imports/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/file_imports/
 type FileImportsService struct {
 	client *Client
 }
@@ -44,7 +44,7 @@ type formatOptions map[string]interface{}
 
 // Upload a localization file.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/file_imports/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/file_imports/
 func (s *FileImportsService) Upload(i *FileImportRequest, reader io.Reader) error {
 	params, err := query.Values(i)
 	if err != nil {

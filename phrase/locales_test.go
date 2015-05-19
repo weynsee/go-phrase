@@ -50,6 +50,13 @@ func TestLocalesService_ListAll(t *testing.T) {
 	}
 }
 
+func TestLocalesService_ListAll_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Locales.ListAll()
+		return err
+	})
+}
+
 func TestLocalesService_Create(t *testing.T) {
 	setup()
 	defer teardown()
@@ -73,6 +80,13 @@ func TestLocalesService_Create(t *testing.T) {
 	}
 }
 
+func TestLocalesService_Create_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Locales.Create("en")
+		return err
+	})
+}
+
 func TestLocalesService_MakeDefault(t *testing.T) {
 	setup()
 	defer teardown()
@@ -90,6 +104,13 @@ func TestLocalesService_MakeDefault(t *testing.T) {
 	if !reflect.DeepEqual(*locale, want) {
 		t.Errorf("Locales.MakeDefault returned %+v, want %+v", locale, want)
 	}
+}
+
+func TestLocalesService_MakeDefault_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Locales.MakeDefault("en")
+		return err
+	})
 }
 
 func TestLocalesService_MakeDefault_invalidLocale(t *testing.T) {
@@ -116,6 +137,12 @@ func TestLocalesService_Download(t *testing.T) {
 	if got := output.String(); !reflect.DeepEqual(content, got) {
 		t.Errorf("Locales.Download returned %+v, want %+v", got, content)
 	}
+}
+
+func TestLocalesService_Download_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		return client.Locales.Download("en", "json", new(bytes.Buffer))
+	})
 }
 
 func TestLocalesService_Download_invalidLocale(t *testing.T) {

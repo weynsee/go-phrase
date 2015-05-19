@@ -26,3 +26,10 @@ func TestBlacklistService_Keys(t *testing.T) {
 		t.Errorf("Blacklist.Keys returned %+v, want %+v", keys, want)
 	}
 }
+
+func TestBlacklistService_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Blacklist.Keys()
+		return err
+	})
+}

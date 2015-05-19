@@ -7,9 +7,9 @@ import (
 )
 
 // OrdersService provides access to the translation order related functions
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translation_orders/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/
 type OrdersService struct {
 	client *Client
 }
@@ -73,7 +73,7 @@ type Order struct {
 // Get a list of all orders in the current project.
 // This is a signed request.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translation_orders/#index
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#index
 func (s *OrdersService) ListAll() ([]Order, error) {
 	req, err := s.client.NewRequest("GET", "translation_orders", nil)
 	if err != nil {
@@ -92,7 +92,7 @@ func (s *OrdersService) ListAll() ([]Order, error) {
 // Get details of the order identified by the order code.
 // This is a signed request.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translation_orders/#show
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#show
 func (s *OrdersService) Get(code string) (*Order, error) {
 	req, err := s.client.NewRequest("GET", fmt.Sprintf("translation_orders/%s", code), nil)
 	if err != nil {
@@ -111,7 +111,7 @@ func (s *OrdersService) Get(code string) (*Order, error) {
 // Create a new order to confirm.
 // This is a signed request.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translation_orders/#create
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#create
 func (s *OrdersService) Create(o *Order) (*Order, error) {
 	params, err := query.Values(o)
 	if err != nil {
@@ -124,7 +124,7 @@ func (s *OrdersService) Create(o *Order) (*Order, error) {
 // Delete an order (must not yet be confirmed).
 // This is a signed request.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translation_orders/#destroy
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#destroy
 func (s *OrdersService) Destroy(code string) error {
 	u := fmt.Sprintf("translation_orders/%s", code)
 
@@ -144,7 +144,7 @@ func (s *OrdersService) Destroy(code string) error {
 // Confirms an open order identified by the order code and starts the translation process. Valid billing information is required for this action. After confirming, the displayed amount will be charged.
 // This is a signed request.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/translation_orders/#confirm
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#confirm
 func (s *OrdersService) Confirm(code string) (*Order, error) {
 	return s.submitOrder("PUT", fmt.Sprintf("translation_orders/%s/confirm", code), nil)
 }
@@ -162,9 +162,4 @@ func (s *OrdersService) submitOrder(method, url string, params url.Values) (*Ord
 	}
 
 	return order, err
-}
-
-func (o Order) String() string {
-	return fmt.Sprintf("Order Code: %s LSP: %s State: %s Amount in Cents: %d",
-		o.Code, o.LSP, o.State, o.AmountInCents)
 }

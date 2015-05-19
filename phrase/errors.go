@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// ErrorResponse represents the response when the Phrase API returns an error.
+// ErrorResponse represents the response when the PhraseApp API returns an error.
 // Error responses are expected to have either a text message (stored in
 // the Message field), or a map of string arrays (stored in ValidationError).
 type ErrorResponse struct {

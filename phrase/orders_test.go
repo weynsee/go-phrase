@@ -43,6 +43,13 @@ func TestOrdersService_ListAll(t *testing.T) {
 	}
 }
 
+func TestOrdersService_ListAll_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Orders.ListAll()
+		return err
+	})
+}
+
 func TestOrdersService_Get(t *testing.T) {
 	setup()
 	defer teardown()
@@ -69,6 +76,13 @@ func TestOrdersService_Get(t *testing.T) {
 	}
 }
 
+func TestOrdersService_Get_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Orders.Get("blah")
+		return err
+	})
+}
+
 func TestOrdersService_Destroy(t *testing.T) {
 	setup()
 	defer teardown()
@@ -81,6 +95,13 @@ func TestOrdersService_Destroy(t *testing.T) {
 	if err != nil {
 		t.Errorf("Orders.Destroy returned error: %v", err)
 	}
+}
+
+func TestOrdersService_Destroy_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		err := client.Orders.Destroy("blah")
+		return err
+	})
 }
 
 func TestOrdersService_Destroy_invalidCode(t *testing.T) {
@@ -128,6 +149,13 @@ func TestOrdersService_Confirm_invalidCode(t *testing.T) {
 	testParseURLError(t, err)
 }
 
+func TestOrdersService_Confirm_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Orders.Confirm("blah")
+		return err
+	})
+}
+
 func TestOrdersService_Create(t *testing.T) {
 	setup()
 	defer teardown()
@@ -173,4 +201,18 @@ func TestOrdersService_Create(t *testing.T) {
 	if !reflect.DeepEqual(order, want) {
 		t.Errorf("Orders.Create returned %+v, want %+v", order, want)
 	}
+}
+
+func TestOrdersService_Create_invalidParam(t *testing.T) {
+	_, err := client.Orders.Create(nil)
+	if err == nil {
+		t.Fatal("Cannot create order with a nil request")
+	}
+}
+
+func TestOrdersService_Create_serverError(t *testing.T) {
+	testErrorHandling(t, func() error {
+		_, err := client.Orders.Create(&Order{})
+		return err
+	})
 }

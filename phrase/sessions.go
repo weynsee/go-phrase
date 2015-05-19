@@ -1,14 +1,13 @@
 package phrase
 
 import (
-	"fmt"
 	"net/url"
 )
 
 // SessionsService provides access to the authentication related functions
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/authentication/
 type SessionsService struct {
 	client *Client
 }
@@ -34,7 +33,7 @@ type checkLoginResponse struct {
 
 // Sign in a user identified by email and password.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/#create
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/authentication/#create
 func (s *SessionsService) Create(email, password string) (string, error) {
 	params := url.Values{}
 	params.Set("email", email)
@@ -55,7 +54,7 @@ func (s *SessionsService) Create(email, password string) (string, error) {
 
 // Log the current user out.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/#destroy
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/authentication/#destroy
 func (s *SessionsService) Destroy() error {
 	req, err := s.client.NewRequest("DELETE", "sessions", nil)
 	if err != nil {
@@ -70,7 +69,7 @@ func (s *SessionsService) Destroy() error {
 
 // Check the validity of an auth_token and return information of the current user.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/authentication/#check_login
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/authentication/#check_login
 func (s *SessionsService) CheckLogin() (*User, error) {
 	req, err := s.client.NewRequest("GET", "auth/check_login", nil)
 	if err != nil {
@@ -84,9 +83,4 @@ func (s *SessionsService) CheckLogin() (*User, error) {
 	}
 
 	return loggedIn.User, err
-}
-
-func (u User) String() string {
-	return fmt.Sprintf("User ID: %d Username: %s",
-		u.ID, u.Username)
 }

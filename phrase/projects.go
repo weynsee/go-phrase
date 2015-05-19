@@ -1,13 +1,9 @@
 package phrase
 
-import (
-	"fmt"
-)
-
 // ProjectsService provides access to the projects related functions
-// in the Phrase API.
+// in the PhraseApp API.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/projects/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/projects/
 type ProjectsService struct {
 	client *Client
 }
@@ -21,7 +17,7 @@ type Project struct {
 
 // Get details for the current project.
 //
-// Phrase API docs: http://docs.phraseapp.com/api/v1/projects/
+// PhraseApp API docs: http://docs.phraseapp.com/api/v1/projects/
 func (s *ProjectsService) Current() (*Project, error) {
 	req, err := s.client.NewRequest("GET", "projects/current", nil)
 	if err != nil {
@@ -35,9 +31,4 @@ func (s *ProjectsService) Current() (*Project, error) {
 	}
 
 	return project, err
-}
-
-func (p Project) String() string {
-	return fmt.Sprintf("Project ID: %d Name: %s",
-		p.ID, p.Name)
 }

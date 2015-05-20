@@ -1,6 +1,6 @@
 # go-phrase #
 
-go-phrase is a Go client library for accessing the [PhraseApp API](http://docs.phraseapp.com/api/v1/).
+go-phrase is a Go client library for accessing the [PhraseApp API](http://docs.phraseapp.com/api/v1/). It also includes a command line interface that implements all the commands in the [official PhraseApp command-line client](https://github.com/phrase/phrase).
 
 **Documentation:** [![GoDoc](https://godoc.org/github.com/weynsee/go-phrase?status.svg)](https://godoc.org/github.com/weynsee/go-phrase)  
 **Build Status:** [![Build Status](https://travis-ci.org/weynsee/go-phrase.svg?branch=master)](https://travis-ci.org/weynsee/go-phrase)  
@@ -8,7 +8,20 @@ go-phrase is a Go client library for accessing the [PhraseApp API](http://docs.p
 
 go-phrase requires Go version 1.1 or greater.
 
-## Usage ##
+## CLI ##
+
+The CLI has 4 commands:
+
+```
+    init    Initializes a phrase project
+    pull    Download the translation files in the current project
+    push    Upload the translation files in the current project to PhraseApp
+    tags    List all the tags in the current project
+```
+
+Options and arguments for the commands are the same those used in the [official command-line client](https://github.com/phrase/phrase).
+
+## API ##
 
 ```go
 import "github.com/weynsee/go-phrase/phrase"

@@ -16,7 +16,7 @@ func TestInitCommand_Run(t *testing.T) {
 	config, _ := NewConfig(path)
 	defer os.Remove(path)
 
-	c := &InitCommand{Ui: ui, Config: config, API: client}
+	c := &InitCommand{UI: ui, Config: config, API: client}
 	code := c.Run([]string{"--secret=secrettoken", "--default-format=json"})
 
 	if code != 0 {
@@ -38,7 +38,7 @@ func TestInitCommand_Run(t *testing.T) {
 
 func TestInitCommand_Run_noSecretError(t *testing.T) {
 	ui := new(mcli.MockUi)
-	c := &InitCommand{Ui: ui, Config: &Config{}}
+	c := &InitCommand{UI: ui, Config: &Config{}}
 	code := c.Run([]string{})
 
 	if code != 1 {
@@ -51,7 +51,7 @@ func TestInitCommand_Run_noSecretError(t *testing.T) {
 
 func TestInitCommand_Run_saveError(t *testing.T) {
 	ui := new(mcli.MockUi)
-	c := &InitCommand{Ui: ui, Config: &Config{}}
+	c := &InitCommand{UI: ui, Config: &Config{}}
 	code := c.Run([]string{"--secret=this"})
 
 	if code != 1 {

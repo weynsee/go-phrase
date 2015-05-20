@@ -36,7 +36,7 @@ type TagProgress struct {
 	Progress map[string]LocaleProgress `json:"progress"`
 }
 
-// Get a list of all tags in the current project.
+// ListAll returns a list of all tags in the current project.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/tags/#index
 func (s *TagsService) ListAll() ([]Tag, error) {
@@ -54,7 +54,7 @@ func (s *TagsService) ListAll() ([]Tag, error) {
 	return *tags, err
 }
 
-// Get detailed information and progress for a tag.
+// GetProgress returns detailed information and progress for a tag.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/tags/#show
 func (s *TagsService) GetProgress(id int) (*TagProgress, error) {

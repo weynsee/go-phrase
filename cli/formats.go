@@ -90,9 +90,8 @@ func (f *xmlFormat) extractLocaleFromPath(c *phrase.Client, path string) (string
 	if strings.Index(res[1], "-r") != -1 {
 		localePart := strings.Split(res[1], "-r")
 		return fmt.Sprintf("%s-%s", localePart[0], localePart[len(localePart)-1]), nil
-	} else {
-		return res[1], nil
 	}
+	return res[1], nil
 }
 
 type stringsFormat struct {
@@ -121,9 +120,8 @@ func (f *stringsFormat) formatName(s string) string {
 		r, n := utf8.DecodeRuneInString(last)
 		last = string(unicode.ToUpper(r)) + last[n:]
 		return fmt.Sprintf("%s-%s", strings.ToLower(parts[0]), last)
-	} else {
-		return fmt.Sprintf("%s-%s", parts[0], strings.ToUpper(parts[len(parts)-1]))
 	}
+	return fmt.Sprintf("%s-%s", parts[0], strings.ToUpper(parts[len(parts)-1]))
 }
 
 func (f *stringsFormat) filenameForLocale(c *Config, l *phrase.Locale) string {
@@ -158,7 +156,7 @@ func newDefaultFormat(f string, aware bool) format {
 	return &defaultFormat{props}
 }
 
-var formats map[string]format = map[string]format{
+var formats = map[string]format{
 	"json": newDefaultFormat("json", false),
 	"csv":  newDefaultFormat("csv", false),
 	"gettext": &defaultFormat{

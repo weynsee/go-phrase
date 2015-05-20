@@ -14,7 +14,7 @@ import (
 
 // PullCommand will download locale files from PhraseApp.
 type PullCommand struct {
-	Ui     mcli.Ui
+	UI     mcli.Ui
 	Config *Config
 	API    *phrase.Client
 }
@@ -28,7 +28,7 @@ const (
 // Run executes the pull command.
 func (c *PullCommand) Run(args []string) int {
 	cmdFlags := flag.NewFlagSet("pull", flag.ContinueOnError)
-	cmdFlags.Usage = func() { c.Ui.Output(c.Help()) }
+	cmdFlags.Usage = func() { c.UI.Output(c.Help()) }
 
 	config := c.Config
 
@@ -53,7 +53,7 @@ func (c *PullCommand) Run(args []string) int {
 		var err error
 		req.UpdatedSince, err = time.Parse(timeFormat, updatedSince)
 		if err != nil {
-			c.Ui.Error(fmt.Sprintf("Error parsing updated-since (%s), format should be YYYYMMDDHHMMSS", updatedSince))
+			c.UI.Error(fmt.Sprintf("Error parsing updated-since (%s), format should be YYYYMMDDHHMMSS", updatedSince))
 			return 1
 		}
 	}
@@ -67,13 +67,13 @@ func (c *PullCommand) Run(args []string) int {
 	req.Format = config.Format
 
 	if err := config.Valid(); err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
 	err := c.fetch(req, cmdFlags.Args())
 	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Error encountered fetching the locales:\n\t%s", err.Error()))
+		c.UI.Error(fmt.Sprintf("Error encountered fetching the locales:\n\t%s", err.Error()))
 		return 1
 	}
 	return 0
@@ -114,29 +114,29 @@ func (c *PullCommand) fetchLocale(req phrase.DownloadRequest, locale phrase.Loca
 	folder := filepath.Join(lc.TargetDirectory, lc.LocaleDirectory)
 	err := os.MkdirAll(folder, 0777)
 	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Error creating folder %s:\n\t%s", folder, err.Error()))
+		c.UI.Error(fmt.Sprintf("Error creating folder %s:\n\t%s", folder, err.Error()))
 		return
 	}
 	path := filepath.Join(folder, lc.LocaleFilename)
 	file, err := os.Create(path)
 	defer file.Close()
 	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Error creating file %s:\n\t%s", path, err.Error()))
+		c.UI.Error(fmt.Sprintf("Error creating file %s:\n\t%s", path, err.Error()))
 		return
 	}
 
 	req.Locale = locale.Name
 	limit, err := c.API.Translations.Download(&req, file)
 	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Error downloading locale %s:\n\t%s", req.Locale, err.Error()))
+		c.UI.Error(fmt.Sprintf("Error downloading locale %s:\n\t%s", req.Locale, err.Error()))
 		return
 	}
 	if limit.Remaining == 0 {
-		c.Ui.Error(fmt.Sprintf("Rate limit reached. Please try again at %v", limit.Reset))
+		c.UI.Error(fmt.Sprintf("Rate limit reached. Please try again at %v", limit.Reset))
 		return
 	}
 
-	c.Ui.Output(fmt.Sprintf("Downloaded %s", path))
+	c.UI.Output(fmt.Sprintf("Downloaded %s", path))
 }
 
 func (c *PullCommand) selectLocales(locales []string) ([]phrase.Locale, error) {
@@ -146,21 +146,20 @@ func (c *PullCommand) selectLocales(locales []string) ([]phrase.Locale, error) {
 	}
 	if len(locales) == 0 {
 		return all, nil
-	} else {
-		localeMap := make(map[string]phrase.Locale)
-		for _, locale := range all {
-			localeMap[locale.Name] = locale
-		}
-		var selected []phrase.Locale = make([]phrase.Locale, 0, len(locales))
-		for _, locale := range locales {
-			if l, ok := localeMap[locale]; ok {
-				selected = append(selected, l)
-			} else {
-				c.Ui.Warn(fmt.Sprintf("Skipping unknown locale %s", locale))
-			}
-		}
-		return selected, nil
 	}
+	localeMap := make(map[string]phrase.Locale)
+	for _, locale := range all {
+		localeMap[locale.Name] = locale
+	}
+	var selected = make([]phrase.Locale, 0, len(locales))
+	for _, locale := range locales {
+		if l, ok := localeMap[locale]; ok {
+			selected = append(selected, l)
+		} else {
+			c.UI.Warn(fmt.Sprintf("Skipping unknown locale %s", locale))
+		}
+	}
+	return selected, nil
 }
 
 // Help displays available options for the pull command.

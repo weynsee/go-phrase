@@ -41,7 +41,7 @@ type Order struct {
 
 	// Name of a tag to limit the translations to. If none given, it is assumed that all existing keys should be translated.
 	Tag           string `json:"tag_name" url:"tag_name,omitempty"`
-	StyleguideUrl string `json:"styleguide_url" url:"-"`
+	StyleguideURL string `json:"styleguide_url" url:"-"`
 	Styleguide    string `json:"styleguide" url:"-"`
 
 	// Identification code of the style guide to attach with this order.
@@ -70,7 +70,7 @@ type Order struct {
 	Category int `json:"category" url:"category,omitempty"`
 }
 
-// Get a list of all orders in the current project.
+// ListAll gets a list of all orders in the current project.
 // This is a signed request.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#index
@@ -121,7 +121,7 @@ func (s *OrdersService) Create(o *Order) (*Order, error) {
 	return s.submitOrder("POST", "translation_orders", params)
 }
 
-// Delete an order (must not yet be confirmed).
+// Destroy deletes an order (must not yet be confirmed).
 // This is a signed request.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#destroy
@@ -141,7 +141,7 @@ func (s *OrdersService) Destroy(code string) error {
 	return err
 }
 
-// Confirms an open order identified by the order code and starts the translation process. Valid billing information is required for this action. After confirming, the displayed amount will be charged.
+// Confirm confirms an open order identified by the order code and starts the translation process. Valid billing information is required for this action. After confirming, the displayed amount will be charged.
 // This is a signed request.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_orders/#confirm

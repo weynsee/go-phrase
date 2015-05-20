@@ -10,7 +10,7 @@ func TestNewCLI(t *testing.T) {
 	args := []string{"a", "b"}
 	cli := NewCLI("0.0.1", args)
 	if got := cli.cli.Name; got != "go-phrase" {
-		t.Error("cli Name should be go-phrase, not %+v", got)
+		t.Errorf("cli Name should be go-phrase, not %+v", got)
 	}
 	if got := cli.cli.Args; !reflect.DeepEqual(got, args) {
 		t.Errorf("cli.Args returned %+v, want %+v", got, args)

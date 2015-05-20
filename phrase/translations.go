@@ -75,7 +75,7 @@ type RateLimit struct {
 
 const timeFormat = "20060102150405"
 
-// List all translations for a locale.
+// Get lists all translations for a locale.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#index
 func (s *TranslationsService) Get(l string, t *time.Time) ([]Translation, error) {
@@ -98,7 +98,7 @@ func (s *TranslationsService) Get(l string, t *time.Time) ([]Translation, error)
 	return translations, err
 }
 
-// List all translations for all locale.
+// ListAll lists all translations for all locale.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#index
 func (s *TranslationsService) ListAll() (map[string][]Translation, error) {
@@ -116,7 +116,7 @@ func (s *TranslationsService) ListAll() (map[string][]Translation, error) {
 	return translations, err
 }
 
-// Fetch translations for a locale and a list of keys.
+// GetByKeys fetches translations for a locale and a list of keys.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#fetch_list
 func (s *TranslationsService) GetByKeys(l string, keys []string) ([]Translation, error) {
@@ -162,7 +162,7 @@ func (s *TranslationsService) Download(d *DownloadRequest, w io.Writer) (*RateLi
 	return rate, nil
 }
 
-// Save a translation for a given locale.
+// Update saves a translation for a given locale.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translations/#store
 func (s *TranslationsService) Update(locale, key string, t *Translation, skipVerification, disallowUpdate bool) (*Translation, error) {

@@ -31,7 +31,7 @@ type checkLoginResponse struct {
 	User     *User `json:"user"`
 }
 
-// Sign in a user identified by email and password.
+// Create signs in a user identified by email and password.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/authentication/#create
 func (s *SessionsService) Create(email, password string) (string, error) {
@@ -52,7 +52,7 @@ func (s *SessionsService) Create(email, password string) (string, error) {
 	return sess.Token, err
 }
 
-// Log the current user out.
+// Destroy logs the current user out.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/authentication/#destroy
 func (s *SessionsService) Destroy() error {
@@ -67,7 +67,7 @@ func (s *SessionsService) Destroy() error {
 	return err
 }
 
-// Check the validity of an auth_token and return information of the current user.
+// CheckLogin checks the validity of an auth_token and returns information of the current user.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/authentication/#check_login
 func (s *SessionsService) CheckLogin() (*User, error) {

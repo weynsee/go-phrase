@@ -26,28 +26,28 @@ func TestPullCommand_Synopsis(t *testing.T) {
 func TestPullCommand_updatedSinceInvalidFormat(t *testing.T) {
 	ui := new(mcli.MockUi)
 
-	c := &PullCommand{Ui: ui, Config: new(Config), API: nil}
+	c := &PullCommand{UI: ui, Config: new(Config), API: nil}
 	code := c.Run([]string{"--updated-since=blah"})
 
 	if code == 0 {
 		t.Fatal("Pull command should return code != 0")
 	}
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Error parsing updated-since") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
 func TestPullCommand_unrecognizedFormat(t *testing.T) {
 	ui := new(mcli.MockUi)
 
-	c := &PullCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PullCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--format=blah"})
 
 	if code == 0 {
 		t.Fatal("Pull command should return code != 0")
 	}
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Unrecognized format: blah") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
@@ -55,7 +55,7 @@ func TestPullCommand(t *testing.T) {
 	setupAPI()
 	defer tearDown()
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translations/download", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		w.Header().Add("X-Rate-Limit-Limit", "60")
@@ -68,7 +68,7 @@ func TestPullCommand(t *testing.T) {
 		fmt.Fprint(w, `[{"id":1,"name":"en","is_default":true},{"id":2,"name":"ms"}]`)
 	})
 	ui := new(mcli.MockUi)
-	c := &PullCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PullCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--encoding=utf-8", "--secret=sikret", "--target=./test", "en", "ms", "unknown"})
 
 	if code != 0 {
@@ -98,7 +98,7 @@ func TestPullCommand_allLocales(t *testing.T) {
 	setupAPI()
 	defer tearDown()
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translations/download", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		w.Header().Add("X-Rate-Limit-Limit", "60")
@@ -111,7 +111,7 @@ func TestPullCommand_allLocales(t *testing.T) {
 		fmt.Fprint(w, `[{"id":1,"name":"en","is_default":true},{"id":2,"name":"ms"},{"id":3,"name":"ms"}]`)
 	})
 	ui := new(mcli.MockUi)
-	c := &PullCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PullCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--target=./test"})
 
 	if code != 0 {
@@ -131,14 +131,14 @@ func TestPullCommand_listLocalesError(t *testing.T) {
 		fmt.Fprint(w, `Service Unavailable`)
 	})
 	ui := new(mcli.MockUi)
-	c := &PullCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PullCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--target=./test"})
 
 	if code != 1 {
 		t.Fatal("Pull command should return code == 1")
 	}
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Error encountered fetching the locales") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
@@ -156,7 +156,7 @@ func TestPullCommand_rateLimited(t *testing.T) {
 		fmt.Fprint(w, `[{"id":1,"name":"en","is_default":true}]`)
 	})
 	ui := new(mcli.MockUi)
-	c := &PullCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PullCommand{UI: ui, Config: new(Config), API: client}
 	c.Run([]string{"--target=./test"})
 
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Rate limit reached.") == -1 {
@@ -177,7 +177,7 @@ func TestPullCommand_downloadError(t *testing.T) {
 		fmt.Fprint(w, `[{"id":1,"name":"en","is_default":true}]`)
 	})
 	ui := new(mcli.MockUi)
-	c := &PullCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PullCommand{UI: ui, Config: new(Config), API: client}
 	c.Run([]string{"--target=./test"})
 
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Error downloading locale en") == -1 {

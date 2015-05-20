@@ -49,7 +49,7 @@ func TestUtils_findDefaultLocaleNameNoDefault(t *testing.T) {
 	}
 }
 
-var utf16bytes []byte = []byte{
+var utf16bytes = []byte{
 	0xff, // BOM
 	0xfe, // BOM
 	'T',

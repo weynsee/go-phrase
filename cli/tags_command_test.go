@@ -18,7 +18,7 @@ func TestTagsCommand_Run(t *testing.T) {
 
 	ui := new(mcli.MockUi)
 
-	c := &TagsCommand{Ui: ui, Config: new(Config), API: client}
+	c := &TagsCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--secret=secrettoken"})
 
 	if code != 0 {
@@ -36,7 +36,7 @@ func TestTagsCommand_error(t *testing.T) {
 
 	ui := new(mcli.MockUi)
 
-	c := &TagsCommand{Ui: ui, Config: new(Config), API: client}
+	c := &TagsCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--secret=secrettoken"})
 
 	if code == 0 {
@@ -44,7 +44,7 @@ func TestTagsCommand_error(t *testing.T) {
 	}
 
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Error encountered") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 

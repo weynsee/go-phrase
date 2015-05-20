@@ -28,28 +28,28 @@ func TestPushCommand_Synopsis(t *testing.T) {
 func TestPushCommand_tagsInvalidFormat(t *testing.T) {
 	ui := new(mcli.MockUi)
 
-	c := &PushCommand{Ui: ui, Config: new(Config), API: nil}
+	c := &PushCommand{UI: ui, Config: new(Config), API: nil}
 	code := c.Run([]string{"--tags=***"})
 
 	if code == 0 {
 		t.Fatal("Push command should return code != 0")
 	}
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Tag *** is invalid") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
 func TestPushCommand_noFilesError(t *testing.T) {
 	ui := new(mcli.MockUi)
 
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{""})
 
 	if code == 0 {
 		t.Fatal("Push command should return code != 0")
 	}
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Could not find any files to upload") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
@@ -58,14 +58,14 @@ func TestPushCommand_noArgsError(t *testing.T) {
 	defer tearDown()
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--secret=sikret"})
 
 	if code == 0 {
 		t.Fatal("Push command should return code != 0")
 	}
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Need either a file or a directory") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
@@ -89,14 +89,14 @@ func testSuccessfulPush(t *testing.T, files map[string][]byte) {
 
 	createTestFiles(files)
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		fmt.Fprint(w, `{"success":true}`)
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{testFolder})
 
 	if code != 0 {
@@ -115,14 +115,14 @@ func TestPushCommand(t *testing.T) {
 		"en.yml": []byte("testdata"),
 	})
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		fmt.Fprint(w, `{"success":true}`)
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--tags=any", "--secret=sikret", "--format=yml", "--locale=en", testFolder})
 
 	if code != 0 {
@@ -145,11 +145,11 @@ func TestPushCommand_fileInvalidContent(t *testing.T) {
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	c.Run([]string{"--format=yml", "--locale=ms", testFolder})
 
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Must have even length byte slice") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
@@ -163,14 +163,14 @@ func TestPushCommand_defaultFolder(t *testing.T) {
 	)
 	defer os.RemoveAll("config")
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		fmt.Fprint(w, `{"success":true}`)
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--format=yml", "--locale=en"})
 
 	if code != 0 {
@@ -196,14 +196,14 @@ func TestPushCommand_recursive(t *testing.T) {
 	}, "test", "locales",
 	)
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		fmt.Fprint(w, `{"success":true}`)
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--format=yml", "--locale=en", "--recursive", testFolder})
 
 	if code != 0 {
@@ -222,14 +222,14 @@ func TestPushCommand_fileInput(t *testing.T) {
 		"en.yml": []byte{0xff, 0xfe},
 	})
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		fmt.Fprint(w, `{"success":true}`)
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--format=yml", "--locale=en", filepath.Join(testFolder, "en.yml")})
 
 	if code != 0 {
@@ -244,7 +244,7 @@ func TestPushCommand_findDefaultLocaleFromAPI(t *testing.T) {
 	setupAPI()
 	defer tearDown()
 
-	var localeCounter int32 = 0
+	var localeCounter int32
 	mux.HandleFunc("/locales", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&localeCounter, 1)
 		fmt.Fprint(w, `[{"id":1,"name":"en","is_default":true}]`)
@@ -254,14 +254,14 @@ func TestPushCommand_findDefaultLocaleFromAPI(t *testing.T) {
 		"locale.ini": []byte("test"),
 	})
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		fmt.Fprint(w, `{"success":true}`)
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{testFolder})
 
 	if code != 0 {
@@ -289,11 +289,11 @@ func TestPushCommand_findDefaultLocaleFromAPIError(t *testing.T) {
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	c.Run([]string{testFolder})
 
 	if err := ui.ErrorWriter.String(); strings.Index(err, "Error uploading") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
@@ -317,7 +317,7 @@ func TestPushCommand_formatNotSupported(t *testing.T) {
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--locale=en", testFolder})
 
 	if code != 0 {
@@ -333,11 +333,11 @@ func TestPushCommand_formatAndExtensionNotSupported(t *testing.T) {
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	c.Run([]string{"--format=blah", testFolder})
 
 	if err := ui.ErrorWriter.String(); strings.Index(err, "(type not supported)") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }
 
@@ -349,14 +349,14 @@ func TestPushCommand_playProperties(t *testing.T) {
 		"messages.en": []byte("testdata"),
 	})
 
-	var counter int32 = 0
+	var counter int32
 	mux.HandleFunc("/translation_keys/upload", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&counter, 1)
 		fmt.Fprint(w, `{"success":true}`)
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--locale=en", "--format=play_properties", testFolder})
 
 	if code != 0 {
@@ -378,7 +378,7 @@ func TestPushCommand_localeSpecifiedMultipleFilesError(t *testing.T) {
 	})
 
 	ui := new(mcli.MockUi)
-	c := &PushCommand{Ui: ui, Config: new(Config), API: client}
+	c := &PushCommand{UI: ui, Config: new(Config), API: client}
 	code := c.Run([]string{"--format=yml", "--locale=fr", testFolder})
 
 	if code == 0 {
@@ -386,6 +386,6 @@ func TestPushCommand_localeSpecifiedMultipleFilesError(t *testing.T) {
 	}
 
 	if err := ui.ErrorWriter.String(); strings.Index(err, "--locale should not be specified") == -1 {
-		t.Fatal("Ui should display error message")
+		t.Fatal("UI should display error message")
 	}
 }

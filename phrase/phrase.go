@@ -149,7 +149,7 @@ func (c *Client) NewUploadRequest(urlStr string, params url.Values, paramName, f
 	}
 	_, err = io.Copy(part, reader)
 
-	for key, _ := range params {
+	for key := range params {
 		_ = writer.WriteField(key, params.Get(key))
 	}
 	err = writer.Close()

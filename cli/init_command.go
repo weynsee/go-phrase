@@ -10,7 +10,7 @@ import (
 
 // InitCommand will initialize a PhraseApp config file named .phrase in the current directory.
 type InitCommand struct {
-	Ui     mcli.Ui
+	UI     mcli.Ui
 	Config *Config
 	API    *phrase.Client
 }
@@ -18,7 +18,7 @@ type InitCommand struct {
 // Run executes the init command.
 func (c *InitCommand) Run(args []string) int {
 	cmdFlags := flag.NewFlagSet("init", flag.ContinueOnError)
-	cmdFlags.Usage = func() { c.Ui.Output(c.Help()) }
+	cmdFlags.Usage = func() { c.UI.Output(c.Help()) }
 	config := c.Config
 	cmdFlags.StringVar(&config.Secret, "secret", config.Secret, "")
 	cmdFlags.StringVar(&config.DefaultLocale, "default-locale", config.DefaultLocale, "")
@@ -32,27 +32,27 @@ func (c *InitCommand) Run(args []string) int {
 	}
 
 	if config.Secret == "" {
-		c.Ui.Error("No auth token was given")
-		c.Ui.Error("Please provide the --secret=YOUR_SECRET parameter.")
+		c.UI.Error("No auth token was given")
+		c.UI.Error("Please provide the --secret=YOUR_SECRET parameter.")
 		return 1
 	}
 
 	if err := config.Save(); err != nil {
-		c.Ui.Error(fmt.Sprintf("Error encountered while saving the file: %s", err.Error()))
+		c.UI.Error(fmt.Sprintf("Error encountered while saving the file: %s", err.Error()))
 		return 1
 	}
 
-	c.Ui.Output("Updated config file .phrase")
+	c.UI.Output("Updated config file .phrase")
 
 	c.API.AuthToken = config.Secret
 	if _, err := c.API.Locales.Create(config.DefaultLocale); err != nil {
-		c.Ui.Warn(fmt.Sprintf("Notice: Locale \"%s\" could not be created (maybe it already exists)", config.DefaultLocale))
+		c.UI.Warn(fmt.Sprintf("Notice: Locale \"%s\" could not be created (maybe it already exists)", config.DefaultLocale))
 	}
 
 	if _, err := c.API.Locales.MakeDefault(config.DefaultLocale); err != nil {
-		c.Ui.Error(fmt.Sprintf("Error encountered while assigning locale %s as default: %s", config.DefaultLocale, err.Error()))
+		c.UI.Error(fmt.Sprintf("Error encountered while assigning locale %s as default: %s", config.DefaultLocale, err.Error()))
 	}
-	c.Ui.Output(fmt.Sprintf("Locale \"%s\" is now the default locale", config.DefaultLocale))
+	c.UI.Output(fmt.Sprintf("Locale \"%s\" is now the default locale", config.DefaultLocale))
 
 	return 0
 }

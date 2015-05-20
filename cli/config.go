@@ -29,7 +29,7 @@ type Config struct {
 	Encoding string `json:"encoding,omitempty"`
 }
 
-// Config stores locale specific configuration options
+// LocaleConfig stores locale specific configuration options
 type LocaleConfig struct {
 	Config
 	format

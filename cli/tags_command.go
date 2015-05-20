@@ -10,7 +10,7 @@ import (
 
 // TagsCommand will display all tags in the current project.
 type TagsCommand struct {
-	Ui     mcli.Ui
+	UI     mcli.Ui
 	Config *Config
 	API    *phrase.Client
 }
@@ -19,7 +19,7 @@ type TagsCommand struct {
 func (c *TagsCommand) Run(args []string) int {
 	list := false
 	cmdFlags := flag.NewFlagSet("tags", flag.ContinueOnError)
-	cmdFlags.Usage = func() { c.Ui.Output(c.Help()) }
+	cmdFlags.Usage = func() { c.UI.Output(c.Help()) }
 	cmdFlags.StringVar(&c.Config.Secret, "secret", c.Config.Secret, "")
 	cmdFlags.BoolVar(&list, "list", false, "")
 	if err := cmdFlags.Parse(args); err != nil {
@@ -28,11 +28,11 @@ func (c *TagsCommand) Run(args []string) int {
 	c.API.AuthToken = c.Config.Secret
 	tags, err := c.API.Tags.ListAll()
 	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Error encountered while pulling tags from the API: %s", err.Error()))
+		c.UI.Error(fmt.Sprintf("Error encountered while pulling tags from the API: %s", err.Error()))
 		return 1
 	}
 	for _, tag := range tags {
-		c.Ui.Output(tag.Name)
+		c.UI.Output(tag.Name)
 	}
 	return 0
 }

@@ -14,9 +14,9 @@ import (
 	"sync"
 )
 
-// PullCommand will upload locale files to PhraseApp.
+// PushCommand will upload locale files to PhraseApp.
 type PushCommand struct {
-	Ui     mcli.Ui
+	UI     mcli.Ui
 	Config *Config
 	API    *phrase.Client
 }
@@ -28,7 +28,7 @@ var validTag = regexp.MustCompile(`\A[a-zA-Z0-9\_\-\.]+\z`)
 // Run executes the push command.
 func (c *PushCommand) Run(args []string) int {
 	cmdFlags := flag.NewFlagSet("push", flag.ContinueOnError)
-	cmdFlags.Usage = func() { c.Ui.Output(c.Help()) }
+	cmdFlags.Usage = func() { c.UI.Output(c.Help()) }
 
 	config := c.Config
 
@@ -54,7 +54,7 @@ func (c *PushCommand) Run(args []string) int {
 		req.Tags = strings.Split(tags, ",")
 		for _, tag := range req.Tags {
 			if !validTag.MatchString(tag) {
-				c.Ui.Error(fmt.Sprintf("Tag %s is invalid: Only letters, numbers, underscores and dashes are allowed", tag))
+				c.UI.Error(fmt.Sprintf("Tag %s is invalid: Only letters, numbers, underscores and dashes are allowed", tag))
 				return 1
 			}
 		}
@@ -72,10 +72,10 @@ func (c *PushCommand) upload(req *phrase.UploadRequest, args []string, recursive
 		return 1
 	}
 	if len(selected) == 0 {
-		c.Ui.Error("Could not find any files to upload")
+		c.UI.Error("Could not find any files to upload")
 		return 1
 	} else if len(selected) > 1 && req.Locale != "" {
-		c.Ui.Error("--locale should not be specified when multiple files are to be uploaded")
+		c.UI.Error("--locale should not be specified when multiple files are to be uploaded")
 		return 1
 	}
 
@@ -95,12 +95,12 @@ func (c *PushCommand) upload(req *phrase.UploadRequest, args []string, recursive
 			go func(f string) {
 				err := c.uploadFile(req, f)
 				if err != nil {
-					c.Ui.Error(fmt.Sprintf("Error uploading %s:\n\t%s", f, err.Error()))
+					c.UI.Error(fmt.Sprintf("Error uploading %s:\n\t%s", f, err.Error()))
 				}
 				wg.Done()
 			}(file)
 		} else {
-			c.Ui.Error(fmt.Sprintf("Could not upload %s (type not supported)", file))
+			c.UI.Error(fmt.Sprintf("Could not upload %s (type not supported)", file))
 			wg.Done()
 		}
 	}
@@ -118,9 +118,8 @@ func rendersLocaleAsExtension(format string) bool {
 	}
 	if fmt, ok := formats[format]; ok {
 		return fmt.properties().localeExtension
-	} else {
-		return false
 	}
+	return false
 }
 
 func (c *PushCommand) uploadFile(req *phrase.UploadRequest, file string) error {
@@ -128,7 +127,7 @@ func (c *PushCommand) uploadFile(req *phrase.UploadRequest, file string) error {
 	if len(req.Tags) > 0 {
 		tagged = fmt.Sprintf(" (tagged: %s)", strings.Join(req.Tags, ", "))
 	}
-	c.Ui.Output(fmt.Sprintf("Uploading %s%s...", file, tagged))
+	c.UI.Output(fmt.Sprintf("Uploading %s%s...", file, tagged))
 	if req.Locale == "" {
 		var err error
 		req.Locale, err = c.guessLocale(file, req.Format)
@@ -136,10 +135,10 @@ func (c *PushCommand) uploadFile(req *phrase.UploadRequest, file string) error {
 			return err
 		}
 	}
-	return c.uploadApi(*req, file)
+	return c.doUpload(*req, file)
 }
 
-func (c *PushCommand) uploadApi(req phrase.UploadRequest, file string) error {
+func (c *PushCommand) doUpload(req phrase.UploadRequest, file string) error {
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
@@ -191,12 +190,12 @@ func guessFormatFromFileExtension(path string) string {
 func (c *PushCommand) selectFiles(filenames []string, recursive bool) ([]string, error) {
 	if len(filenames) == 0 {
 		if src, err := os.Stat(defaultLocaleFolder); err == nil && src.IsDir() {
-			c.Ui.Warn(fmt.Sprintf("No file or directory specified, using %s", defaultLocaleFolder))
+			c.UI.Warn(fmt.Sprintf("No file or directory specified, using %s", defaultLocaleFolder))
 			filenames = append(filenames, defaultLocaleFolder)
 		} else {
-			c.Ui.Error("Need either a file or a directory:")
-			c.Ui.Error("go-phrase push FILE")
-			c.Ui.Error("go-phrase push DIRECTORY")
+			c.UI.Error("Need either a file or a directory:")
+			c.UI.Error("go-phrase push FILE")
+			c.UI.Error("go-phrase push DIRECTORY")
 			return nil, errors.New("No files to push")
 		}
 	}

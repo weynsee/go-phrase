@@ -69,14 +69,14 @@ type UploadRequest struct {
 	ConvertEmoji       bool     `url:"convert_emoji,int,omitempty"`
 }
 
-// List all keys for your current project.
+// ListAll lists all keys for your current project.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_keys/#index
 func (s *KeysService) ListAll() ([]Key, error) {
 	return s.Get(nil)
 }
 
-// Return only keys that match the given names. This is a signed request.
+// Get returns only keys that match the given names. This is a signed request.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_keys/#index
 func (s *KeysService) Get(keyNames []string) ([]Key, error) {
@@ -116,7 +116,7 @@ func (s *KeysService) Update(k *Key) (*Key, error) {
 	return s.submitKey("PATCH", u, k)
 }
 
-// Delete key identified by id. Be careful: This will delete all associated translations as well!
+// Destroy key identified by id. Be careful: This will delete all associated translations as well!
 // This is a signed request.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_keys/#destroy
@@ -133,7 +133,7 @@ func (s *KeysService) Destroy(id int) error {
 	return err
 }
 
-// Delete multiple keys identified by their ids. Be careful: This will delete all associated translations as well! The number of keys to delete is limited to 50 per request.
+// DestroyMultiple deletes multiple keys identified by their ids. Be careful: This will delete all associated translations as well! The number of keys to delete is limited to 50 per request.
 // This is a signed request.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_keys/#destroy_multiple
@@ -153,7 +153,7 @@ func (s *KeysService) DestroyMultiple(ids []int) error {
 	return err
 }
 
-// Returns all untranslated keys for the given locale. Note: This will return 10,000 keys at most.
+// ListUntranslated returns all untranslated keys for the given locale. Note: This will return 10,000 keys at most.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_keys/#untranslated
 func (s *KeysService) ListUntranslated(l string) ([]Key, error) {
@@ -173,7 +173,7 @@ func (s *KeysService) ListUntranslated(l string) ([]Key, error) {
 	return *keys, err
 }
 
-// Add tags to the given keys. Existing tags for the given keys will not be removed.
+// Tag adds tags to the given keys. Existing tags for the given keys will not be removed.
 // This is a signed request.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_keys/#tag
@@ -196,7 +196,7 @@ func (s *KeysService) Tag(ids []int, tags []string) error {
 	return err
 }
 
-// Returns what I18n.translate(key) would return in Ruby in JSON format. This is to be able to provide data if the translation has not been used in a pure key-value-fashion, but to store an array or even a hash of its child items.
+// Translate returns what I18n.translate(key) would return in Ruby in JSON format. This is to be able to provide data if the translation has not been used in a pure key-value-fashion, but to store an array or even a hash of its child items.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/translation_keys/#translate
 func (s *KeysService) Translate(key string) (*KeyTranslation, error) {
@@ -216,9 +216,8 @@ func (s *KeysService) Translate(key string) (*KeyTranslation, error) {
 	if resp.Success {
 		translation, err := decodeTranslation(resp.Translate)
 		return translation, err
-	} else {
-		return nil, err
 	}
+	return nil, err
 }
 
 // Upload a localization file to the current project. This will add new keys and their translations.

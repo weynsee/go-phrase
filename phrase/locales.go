@@ -26,7 +26,7 @@ type Locale struct {
 	Pluralizations map[string]map[string]string `json:"pluralizations"`
 }
 
-// Returns list of existing locales in current project.
+// ListAll returns list of existing locales in current project.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/locales/#index
 func (s *LocalesService) ListAll() ([]Locale, error) {
@@ -75,7 +75,7 @@ func (s *LocalesService) Create(name string) (*Locale, error) {
 	return s.requestLocale(req)
 }
 
-// Promotes locale to be the default locale for the current project.
+// MakeDefault promotes locale to be the default locale for the current project.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/locales/#make_default
 func (s *LocalesService) MakeDefault(name string) (*Locale, error) {

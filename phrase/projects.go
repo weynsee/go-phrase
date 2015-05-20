@@ -15,7 +15,7 @@ type Project struct {
 	Slug string `json:"slug"`
 }
 
-// Get details for the current project.
+// Current gets details for the current project.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/projects/
 func (s *ProjectsService) Current() (*Project, error) {

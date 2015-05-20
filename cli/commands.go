@@ -28,28 +28,28 @@ func init() {
 	commands = map[string]mcli.CommandFactory{
 		"init": func() (mcli.Command, error) {
 			return &InitCommand{
-				Ui:     ui,
+				UI:     ui,
 				Config: config,
 				API:    api,
 			}, nil
 		},
 		"push": func() (mcli.Command, error) {
 			return &PushCommand{
-				Ui:     ui,
+				UI:     ui,
 				Config: config,
 				API:    api,
 			}, nil
 		},
 		"pull": func() (mcli.Command, error) {
 			return &PullCommand{
-				Ui:     ui,
+				UI:     ui,
 				Config: config,
 				API:    api,
 			}, nil
 		},
 		"tags": func() (mcli.Command, error) {
 			return &TagsCommand{
-				Ui:     ui,
+				UI:     ui,
 				Config: config,
 				API:    api,
 			}, nil

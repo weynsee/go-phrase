@@ -12,7 +12,7 @@ type blacklistKey struct {
 	Name string
 }
 
-// List all blacklisted keys.
+// Keys lists all blacklisted keys.
 //
 // PhraseApp API docs: http://docs.phraseapp.com/api/v1/blacklisted_keys/
 func (s *BlacklistService) Keys() ([]string, error) {

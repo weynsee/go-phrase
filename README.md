@@ -10,6 +10,12 @@ go-phrase requires Go version 1.1 or greater.
 
 ## CLI ##
 
+#### Installation ####
+
+Download the latest binary [here](https://github.com/weynsee/go-phrase/releases/latest)
+
+#### Usage ####
+
 The CLI has 4 commands:
 
 ```
